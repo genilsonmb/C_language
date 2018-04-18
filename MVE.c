@@ -1,124 +1,137 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-typedef struct alun {
-	char al_nome[50];
-	int al_codigo;
-	double al_cpf;
-}alun;
+typedef struct cadastro{
+	char nome[20];
+	char cpf[15];
+	char codigo[15];
+}cadastro;
 
-typedef struct disciplina {
-	int disc_codigo;
-	char disc_nome[40];
-	char disc_professor[50];
-	int disc_creditos;
-}disciplina;
+void struct_to_arquivo(FILE *arquivo,cadastro *cad,int a);
+void arquivo_to_struct(FILE *arquivo,cadastro *cad,int a);
+void imp_alunos(cadastro *cad,int a);
+int contar_alunos(cadastro *cad);
+int contar_linhas(FILE *arquivo);
+void inserir_aluno(cadastro **cad,int *n);
 
-void imprimir_tudo(FILE *arquivo);
-void inscrever_aluno(FILE *arquivo);
-void menu(FILE *arquivo);
-void estrut_aluno(FILE *arquivo,alun *lista_alunos);
 
 int main()
 {
-	int i=0;
-	printf("Inicio MAIN\n");
-	FILE *arqw;
-	alun *alunos;
-	arqw = fopen("arquivoMVE.txt", "r");
-	alunos = (alun*)malloc(2*sizeof(alun));
-	fclose(arqw);
-	estrut_aluno(arqw,alunos);
-	menu(arqw);
-	printf("\n\n\nFim do menu inicio do loop.\n\n\n");
-	for (i = 0 ; i < 6 ; i++) {
-		printf("%d ",alunos[i].al_codigo);
-		printf("%.lf ",alunos[i].al_cpf);
-		printf("%s\n",alunos[i].al_nome);
-	}
-	printf("Fim do loop.\n\n\n");
-	//inscrever_aluno(arqw);
-	//imprimir_tudo(arqw);
-	printf("Aluno[3].al_nome: %s\n",alunos[3].al_nome);
-	
-	return 0;
-}
-void inscrever_aluno(FILE *arquivo) {
 	int a;
-	double b=0;
-	char c[50];
-	arquivo = fopen("arquivoMVE.txt", "a");
-	printf("Digite o nome do aluno: \n");
-	scanf("%s",c);
-	printf("Digite o codigo do aluno: \n");
-	scanf("%d",&a);
-	printf("Digite o cpf do aluno: \n");
-	scanf("%lf",&b);
-	fprintf(arquivo,"%d \n",a);
-	fprintf(arquivo,"%s \n",c);
-	fprintf(arquivo,"%.lf \n",b);
-	fclose(arquivo);
-}
-void imprimir_tudo(FILE *arquivo){
-	int a;
-	double b;
-	char c[50];
-	arquivo = fopen("arquivoMVE.txt", "r");	
-	printf("Informações lidas no arquivo:\n");
-	printf("Cod Aluno\tCPF\t\tNome\n");
-	//enquanto feof for falso
-	while(!feof(arquivo)) {
-		fscanf(arquivo,"%d",&a);
-		fscanf(arquivo,"%s",c);
-		fscanf(arquivo,"%lf",&b);
-		if ( feof(arquivo) ) 
-			break;
-		printf("%d %.lf \t\t%s\t\n",a,b,c);
-		
-	}
-	fclose(arquivo);
-}
-void menu(FILE *arquivo) {
-	int opcao=100;
-	printf("1 - Adicionar aluno\n");
-	printf("2 - Imprimir tudo\n");
-	printf("Digite a opcao:\n");
-	scanf("%d",&opcao);
+	int n;
+	int *pn;
+	pn=&n;
+	int opcao=0;
+	FILE *arqr;
+	cadastro *p_alunos;
+	cadastro l_alunos;
+	p_alunos = &l_alunos;
+	p_alunos = (cadastro*)malloc(5*sizeof(cadastro));
+	arqr = fopen("testeestrutura.txt","r");
+	a = contar_linhas(arqr);
+	arquivo_to_struct(arqr,p_alunos,a);	
+	a = contar_alunos(p_alunos);
+	n = contar_alunos(p_alunos);
+	imp_alunos(p_alunos,a);
+	printf("\n%d\n",a);
+	while (opcao!=9) {
+		printf("1-Inserir Aluno\n");
+		printf("2-Sair\n");
+		printf("Digite a opcao\n");
+		scanf("%d",&opcao);
 	switch (opcao) {
 		case 1:
-			inscrever_aluno(arquivo);
+			inserir_aluno(&p_alunos,pn);
 			break;
 		case 2:
-			imprimir_tudo(arquivo);
+			imp_alunos(p_alunos,a+2);
 			break;
-		default:
-			printf("Operacao invalida.\n");
+		case 3:
+			printf("\n%d\n",*pn);
 			break;
+		case 9:
+			break;
+		}
+	}
+	struct_to_arquivo(arqr,p_alunos,a);
+//	printf("%ld",(sizeof(*p_alunos)/sizeof(cadastro*)));
+	return 0;
+}
+//salva os arquivos da estrutura no arquivo
+void struct_to_arquivo(FILE *arquivo,cadastro *cad,int a){
+	arquivo = fopen("testeestrutura.txt","w");
+	for (int i = 0 ; i < a ; i++){
+	fprintf(arquivo,"%s\n",cad[i].nome);
+	fprintf(arquivo,"%s\n",cad[i].cpf);
+	fprintf(arquivo,"%s\n",cad[i].codigo);
+	}	
+}
+//passa os dados do arquivo para estrutura
+void arquivo_to_struct(FILE *arquivo,cadastro *cad,int a){	
+	arquivo = fopen("testeestrutura.txt","r");
+	for (int i = 0 ; i < a/3 ; i++){
+	fscanf(arquivo,"%s",cad[i].nome);
+	fscanf(arquivo,"%s",cad[i].cpf);
+	fscanf(arquivo,"%s",cad[i].codigo);
+}
+	fclose(arquivo);
+}
+//imprime os alunos na estrutura
+void imp_alunos(cadastro *cad,int a){
+	//a = contar_alunos(cad);
+	for (int i = 0 ; i < a ; i++){
+	printf("%s (%d)\n",cad[i].nome,i);
+	printf("%s\n",cad[i].cpf);
+	printf("%s\n",cad[i].codigo);
 	}	
 }
 
-void estrut_aluno(FILE *arquivo,alun *lista_alunos){
-	//printf("Inicio do while de copia de estrutura\n");
-	int a;
-	int n=0;
-	double b;
-	char c[50];
-	arquivo = fopen("arquivoMVE.txt", "r");	
-	lista_alunos = (alun*)malloc(2*sizeof(alun));
-	while(!feof(arquivo)) {
-	//	printf("dentro do while no estrut aluno\n");
-		fscanf(arquivo,"%d",&a);
-		fscanf(arquivo,"%s",c);
-		fscanf(arquivo,"%lf",&b);
-		lista_alunos[n].al_codigo = a;
-		lista_alunos[n].al_cpf = b;
-		strcpy(lista_alunos[n].al_nome,c);
-		n++;
-		//printf("%d\n",n);
-		lista_alunos = (alun *)realloc(lista_alunos,(n+1)*sizeof(alun));	
-		if ( feof(arquivo) ) 
-			break;
+//conta a quantidade de alunos na estrutura
+int contar_alunos(cadastro *cad){
+	int n = 0;
+	while ( cad[n].nome[0] == 'N'){
+		n++;	
+	} 
+	return n;
+}
+//conta a quantidade de estruturas
+int contar_estrut_arq(FILE *arquivo){
+	char c;
+	int linhas=0;
+	while(c!=EOF){
+		fscanf(arquivo,"%c",&c);
+		if (c == '\n')
+			linhas++;
 	}
-	fclose(arquivo);
+	return linhas/3;
 	
+}
+//conta a quantidade de linhas do arquivo
+int contar_linhas(FILE *arquivo){
+	arquivo = fopen("testeestrutura.txt","r");
+	char a;
+	int cont=-1;
+	while(!feof(arquivo)){
+	fscanf(arquivo,"%c",&a);
+	if (a == '\n')
+		cont++;
+}
+	fclose(arquivo);
+return cont;
+}
+
+//adiciona aluno na estrutura
+void inserir_aluno(cadastro **cad,int *pn){
+	printf("Dentro da funcao contamos %d alunos\n",(*pn));
+	cad = (cadastro **)realloc(cad,((*pn)+1)*sizeof(cadastro));
+	printf("Qual o nome do aluno?\n");
+	scanf("%s",cad[0]->nome);
+	printf("Qual o cpf do aluno?\n");
+	scanf("%s",cad[(*pn)]->cpf);
+	printf("Qual o codigo do aluno?\n");
+	scanf("%s",cad[(*pn)]->codigo);
+	printf("%s (%d)\n",cad[(*pn)]->nome,(*pn));
+	printf("%s\n",cad[(*pn)]->cpf);
+	printf("%s\n",cad[(*pn)]->codigo);
+	*pn=*pn+1;
 }
