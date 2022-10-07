@@ -61,8 +61,10 @@ unsigned long semente;
  printf("\n");
 	 for (int i = 0 ; i < 61 ; i++)
 	 { 
-			rand2 = rand3;
-			 result1 = *(ptrRand1)^*(possib + i);
+		 for (unsigned char z = 0 ; z < 255 ; z++)
+		 {
+			 rand2 = rand3;
+			 result1 = *(ptrRand1)^z;
 			 *(encrypt2 + i) =  *ptrResult1; 			 
 			 rand2 = rand2&7;		 						
 			 result2 = 8 - *ptrRand2;				  
@@ -73,8 +75,9 @@ unsigned long semente;
 			 	 
 			 if (cipher[k] == encrypt2[i])
 			 {
-				 plainText[k] = possib[i];
+				 plainText[k] = z;
 			 } 
+		 }
 	}
 	printf("Encrypt: %s\n",encrypt2);
 }
@@ -100,5 +103,4 @@ for (int i = 0 ; i < 28 ; i++)
  
   return 0;
 }
-
 
